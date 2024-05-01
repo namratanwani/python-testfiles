@@ -113,40 +113,29 @@ def create_container_job(project_id: str, region: str, job_name: str) -> batch_v
 
     return client.create_job(create_request)
 
-def create_script_job(project_id: str, region: str, job_name: str) -> batch_v1.Job:
+def create_script_job_with_bucket(
+    project_id: str, region: str, job_name: str, bucket_name: str
+) -> batch_v1.Job:
     
-    """
-    Creates a new Batch job in Google Cloud, specifying a script to run and resource
-    requirements for the task, as well as options for task groups, allocation
-    policies, and logs policies.
-
-    Args:
-        project_id (str): 12-digit project ID associated with the Google Cloud
-            Platform project in which the job will be created and executed.
-        region (str): parent resource for the new job, which is required to create
-            a new job in a specific location within a project.
-        job_name (str): name of the job that will be created.
-
-    Returns:
-        batch_v1.Job: a `batch v1.Job` object with the specified configuration.
-
-    """
     client = batch_v1.BatchServiceClient()
 
     # Define what will be done as part of the job.
     task = batch_v1.TaskSpec()
     runnable = batch_v1.Runnable()
     runnable.script = batch_v1.Runnable.Script()
-    runnable.script.text = "echo Hello world! This is task ${BATCH_TASK_INDEX}. This job has a total of ${BATCH_TASK_COUNT} tasks."
-    # You can also run a script from a file. Just remember, that needs to be a script that's
-    # already on the VM that will be running the job. Using runnable.script.text and runnable.script.path is mutually
-    # exclusive.
-    # runnable.script.path = '/tmp/test.sh'
+    runnable.script.text = "echo Hello world from task ${BATCH_TASK_INDEX}. >> /mnt/share/output_task_${BATCH_TASK_INDEX}.txt"
     task.runnables = [runnable]
+
+    gcs_bucket = batch_v1.GCS()
+    gcs_bucket.remote_path = bucket_name
+    gcs_volume = batch_v1.Volume()
+    gcs_volume.gcs = gcs_bucket
+    gcs_volume.mount_path = "/mnt/share"
+    task.volumes = [gcs_volume]
 
     # We can specify what resources are requested by each task.
     resources = batch_v1.ComputeResource()
-    resources.cpu_milli = 2000  # in milliseconds per cpu-second. This means the task requires 2 whole CPUs.
+    resources.cpu_milli = 500  # in milliseconds per cpu-second. This means the task requires 50% of a single CPUs.
     resources.memory_mib = 16
     task.compute_resource = resources
 
@@ -172,7 +161,7 @@ def create_script_job(project_id: str, region: str, job_name: str) -> batch_v1.J
     job = batch_v1.Job()
     job.task_groups = [group]
     job.allocation_policy = allocation_policy
-    job.labels = {"env": "testing", "type": "script"}
+    job.labels = {"env": "testing", "type": "script", "mount": "bucket"}
     # We use Cloud Logging as it's an out of the box available option
     job.logs_policy = batch_v1.LogsPolicy()
     job.logs_policy.destination = batch_v1.LogsPolicy.Destination.CLOUD_LOGGING
@@ -184,7 +173,6 @@ def create_script_job(project_id: str, region: str, job_name: str) -> batch_v1.J
     create_request.parent = f"projects/{project_id}/locations/{region}"
 
     return client.create_job(create_request)
-
 
 
 def create_script_job(project_id: str, region: str, job_name: str) -> batch_v1.Job:
