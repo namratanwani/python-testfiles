@@ -114,8 +114,28 @@ def create_container_job(project_id: str, region: str, job_name: str) -> batch_v
     return client.create_job(create_request)
 
 def create_script_job_with_bucket(
-    project_id: str, region: str, job_name: str, bucket_name: str
-) -> batch_v1.Job:
+    project_id: str, region: str, job_name: str, bucket_name: str) -> batch_v1.Job:
+     
+    """
+    Creates a new job in Google Cloud Platform's Batch Engine, using a script as
+    the job's primary task. The script is executed on a virtual machine with a
+    specific configuration of CPU and memory resources, and logs are sent to Cloud
+    Logging.
+
+    Args:
+        project_id (str): Project ID where the job will run.
+        region (str): Google Cloud Platform region where the job will be created
+            and executed, which is used to determine the job's parent resource in
+            the create_job method call.
+        job_name (str): name of the job to be created.
+        bucket_name (str): name of a Google Cloud Storage bucket where the script
+            will be executed.
+
+    Returns:
+        batch_v1.Job: a batch job with a script that runs a command and saves the
+        output to a Google Bucket.
+
+    """
     
     client = batch_v1.BatchServiceClient()
 
