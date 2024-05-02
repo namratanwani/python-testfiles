@@ -1,6 +1,22 @@
 def list_tasks(
     project_id: str, region: str, job_name: str, group_name: str
 ) -> Iterable[batch_v1.Task]:
+    """
+    Lists all tasks associated with a given job and group in a specified region,
+    returning an iterable sequence of `batch_v1.Task` objects.
+
+    Args:
+        project_id (str): ID of the project for which tasks will be listed.
+        region (str): location where the jobs and tasks are being executed, and
+            it is used to filter the list of tasks returned by the `list_tasks` method.
+        job_name (str): name of the job for which tasks are to be listed.
+        group_name (str): name of the task group to list tasks for in the Batch
+            Service API request.
+
+    Returns:
+        Iterable[batch_v1.Task]: an iterable of `batch_v1.Task` objects.
+
+    """
     client = batch_v1.BatchServiceClient()
 
     return client.list_tasks(
@@ -10,6 +26,18 @@ def list_tasks(
 def print_job_logs(project_id: str, job: batch_v1.Job) -> NoReturn:
      # Initialize client that will be used to send requests across threads. This
     # client only needs to be created once, and can be reused for multiple requests.
+    """
+    Iterates over the log entries of a job and prints the payload of each entry
+    that matches the specified filter.
+
+    Args:
+        project_id (str): identity of the project associated with the job logs to
+            be retrieved, which is used to initialize a logging client for sending
+            requests across threads.
+        job (batch_v1.Job): batch v1 job object that contains the log entries to
+            be printed.
+
+    """
     log_client = logging.Client(project=project_id)
     logger = log_client.logger("batch_task_logs")
 
@@ -18,6 +46,16 @@ def print_job_logs(project_id: str, job: batch_v1.Job) -> NoReturn:
 
 def sample_cancel_operation(project, operation_id):
 
+    """
+    Cancels an Operation ID associated with a specific Google Cloud project using
+    the AutoML API.
+
+    Args:
+        project (str): Google Cloud Project ID used to identify the project in
+            which the operation will be cancelled.
+        operation_id (str): ID of an ongoing operation to be cancelled.
+
+    """
     client = automl_v1beta1.AutoMlClient()
 
     operations_client = client._transport.operations_client
@@ -36,6 +74,19 @@ def authenticate_with_api_key(quota_project_id: str, api_key_string: str) -> Non
     
 
     # Initialize the Language Service client and set the API key and the quota project id.
+    """
+    Uses the given API key and quota project ID to authenticate with a Language
+    Service API, makes a request to analyze the sentiment of a given text, and
+    prints the sentiment score and magnitude.
+
+    Args:
+        quota_project_id (str): ID of a Google Cloud Platform project that has
+            access to the Language Service API and is used by the function to
+            authenticate with the API using an API key.
+        api_key_string (str): 12-digit API key used to authenticate with the
+            Language Service API.
+
+    """
     client = language_v1.LanguageServiceClient(
         client_options={"api_key": api_key_string, "quota_project_id": quota_project_id}
     )
@@ -56,6 +107,21 @@ def authenticate_with_api_key(quota_project_id: str, api_key_string: str) -> Non
           
 def create_api_key(project_id: str, suffix: str) -> Key:
        # Create the API Keys client.
+    """
+    Creates an API key for a given project and suffix. It sets the display name
+    and location for the API key, creates a request object, makes the request to
+    create the API key, and prints a success message with the created API key value.
+
+    Args:
+        project_id (str): ID of the Google Cloud Project for which an API key will
+            be created.
+        suffix (str): display name for the newly created API key, which is printed
+            to the console along with the key value.
+
+    Returns:
+        Key: a successfully created API key with a displayed name and key string.
+
+    """
     client = api_keys_v2.ApiKeysClient()
 
     key = api_keys_v2.Key()
@@ -77,6 +143,15 @@ def create_api_key(project_id: str, suffix: str) -> Key:
 def lookup_api_key(api_key_string: str) -> None:
    
     # Create the API Keys client.
+    """
+    Uses the `ApiKeysClient` to make a lookup request for an API key based on its
+    string value, and prints the retrieved API key name.
+
+    Args:
+        api_key_string (str): API key to be looked up in the API Keys client, which
+            is used to retrieve the corresponding API key name.
+
+    """
     client = api_keys_v2.ApiKeysClient()
 
     # Initialize the lookup request and set the API key string.
@@ -95,6 +170,21 @@ def lookup_api_key(api_key_string: str) -> None:
 def restrict_api_key_android(project_id: str, key_id: str) -> Key:
 
     # Create the API Keys client.
+    """
+    Updates an API key's restrictions for android applications by specifying the
+    allowed application packages and SHA1 fingerprints.
+
+    Args:
+        project_id (str): 20-digit numerical identifier of the Google Cloud Project
+            to which the API key belongs.
+        key_id (str): 26-character API key ID that is being updated with restriction(s)
+            on Android applications.
+
+    Returns:
+        Key: a successful update of the API key with restrictions applied to the
+        Android application.
+
+    """
     client = api_keys_v2.ApiKeysClient()
 
     # Specify the android application's package name and SHA1 fingerprint.
@@ -132,6 +222,20 @@ def restrict_api_key_android(project_id: str, key_id: str) -> Key:
 def restrict_api_key_api(project_id: str, key_id: str) -> Key:
     
     # Create the API Keys client.
+    """
+    Restricts an API key by specifying the target service and methods that can be
+    used with the key, preventing unauthorized usage.
+
+    Args:
+        project_id (str): ID of the Google Cloud project to which the API key belongs.
+        key_id (str): 16-character ID of the API key to be restricted, which is
+            used to identify the key in the Google Cloud Platform and enable
+            restrictions on its usage.
+
+    Returns:
+        Key: a successfully updated API key with restricted usage.
+
+    """
     client = api_keys_v2.ApiKeysClient()
 
     # Restrict the API key usage by specifying the target service and methods.
@@ -165,6 +269,20 @@ def restrict_api_key_api(project_id: str, key_id: str) -> Key:
 def restrict_api_key_http(project_id: str, key_id: str) -> Key:
     
     # Create the API Keys client.
+    """
+    Updates an API key's restrictions by adding a list of allowed referrers for
+    browser key usage, allowing access to specific websites.
+
+    Args:
+        project_id (str): ID of the Google Cloud project for which an API key will
+            be restricted.
+        key_id (str): ID of the API key to be restricted.
+
+    Returns:
+        Key: a success message indicating that the API key has been updated with
+        restricted usage to specific websites.
+
+    """
     client = api_keys_v2.ApiKeysClient()
 
     # Restrict the API key usage to specific websites by adding them to the list of allowed_referrers.
@@ -197,6 +315,20 @@ def restrict_api_key_http(project_id: str, key_id: str) -> Key:
 def restrict_api_key_ios(project_id: str, key_id: str) -> Key:
 
     # Create the API Keys client.
+    """
+    Updates an API key for iOS usage, restricting its use to specific bundle IDs.
+    It sets the restriction in the `IosKeyRestrictions` object and updates the key
+    with the restriction in the `Restrictions` object.
+
+    Args:
+        project_id (str): 10-digit numerical identifier of the Google Cloud Platform
+            project that the API key belongs to.
+        key_id (str): 10-digit ID of the API key that needs to be restricted.
+
+    Returns:
+        Key: a successfully updated API key with restricted usage for iOS apps.
+
+    """
     client = api_keys_v2.ApiKeysClient()
 
     # Restrict the API key usage by specifying the bundle ID(s) of iOS app(s) that can use the key.
