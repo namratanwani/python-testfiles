@@ -113,6 +113,11 @@ dataset = dataset.shuffle(local_seed)
 
 
 def data_generator():
+    """
+    Generates a sequence of tuples, where each tuple contains the corresponding
+    question and normalized alias for that question based on the dataset provided.
+
+    """
     for i in range(len(dataset)):
         yield dataset[i]["question"], [item for item in dataset[i]["answer"]["normalized_aliases"]]
 
@@ -122,6 +127,18 @@ gen = iter(gen)
 
 
 def generate_data(n):
+    """
+    Takes an integer `n` as input and returns a tuple of two lists: `tasks`, which
+    contains `n` tasks to be completed, and `answers`, which contains the corresponding
+    answers.
+
+    Args:
+        n (int): number of task-answer pairs to generate for the function.
+
+    Returns:
+        list: a list of tasks and their corresponding answers.
+
+    """
     tasks, answers = [], []
     for i in range(n):
         q, a = next(gen)
@@ -131,7 +148,34 @@ def generate_data(n):
 
 
 def exact_match_reward(responses, answers=None):
-    """Reward if generated response contains correct answer."""
+    """
+    Computes rewards for generated responses based on how many correct answers are
+    found in the response. It takes two inputs: `responses` and `answers`, and
+    returns a list of rewards, each represented as a tensor.
+
+    Args:
+        responses (list): 2D tensor containing the user's generated responses,
+            which are compared to the correct answers to compute the reward.
+        answers (list): 100% correct answers that the model should match against
+            the user responses to determine the reward.
+
+    Returns:
+        torch.tensor: a list of Tensor rewards, where each reward represents the
+        number of times the generated response matches the correct answer.
+        
+        	1/ `rewards`: A list of Tensor objects representing the rewards for each
+        generated response. Each tensor contains a floating-point value representing
+        the reward score between 0 and 1, where a higher value indicates a better
+        match.
+        	2/ The `reward` variable is defined as 0.0 initially before any elements
+        are appended to `rewards`. This means that the reward for an empty response
+        will be 0.0.
+        	3/ Each element in `rewards` is appended with a tensor value representing
+        the reward score based on the given answer and generated response. The
+        value ranges from 0.0 to 1.0, indicating the quality of the match between
+        the two.
+
+    """
     rewards = []
     for response, answer in zip(responses, answers):
         reward = 0.0
@@ -159,6 +203,28 @@ text_env = TextEnvironment(
 
 
 def print_trainable_parameters(model):
+    """
+    Counts the number of trainable and all parameters of a given PyTorch model,
+    and prints the ratios of trainable to all parameters as a percentage.
+
+    Args:
+        model (`Tensor`.): neural network model for which the trainable parameters
+            are to be counted.
+            
+            		- `model`: A PyTorch torch.nn.Module object that contains multiple
+            parameters and layers.
+            		- `named_parameters()`: Returns a list of tuples, where each tuple
+            contains the name of a parameter and the corresponding tensor.
+            		- `_param`: A dictionary containing the number of elements in each
+            parameter.
+            		- `requires_grad`: A boolean indicating whether a parameter is
+            required to be re-computed during training (true) or not (false).
+            
+            	Using these properties, the function calculates the total number of
+            parameters (`all_param`) and the number of trainable parameters
+            (`trainable_params`). Finally, it prints a summary of these quantities.
+
+    """
     trainable_params = 0
     all_param = 0
     for _, param in model.named_parameters():

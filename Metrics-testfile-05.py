@@ -4,17 +4,13 @@ def get_vod_session(
     
 
     """
-    Retrieves a VOD session by its ID, retrieved from the project ID and location.
-    It returns the VOD session object.
+    Retrieves a VOD session with the specified `project_id`, `location`, and
+    `session_id` from VideoStitcher service using the provided `client`.
 
     Args:
-        project_id (str): unique identifier for a Google Cloud Video Intelligence
-            project.
-        location (str): location of the VOD session being retrieved, which is used
-            to construct the `vod_session_path` resource name for retrieving the
-            session from the VideoStitcher service.
-        session_id (str): ID of the VOD session to retrieve in the given project
-            and location.
+        project_id (str): ID of the project to which the VOD session belongs.
+        location (str): location of the VOD session to retrieve.
+        session_id (str): identifier of the VOD session to be retrieved from VideoStitcherServiceClient.
 
     Returns:
         stitcher_v1.types.VodSession: a `VodSession` object containing information
@@ -38,24 +34,23 @@ def create_job_with_embedded_captions(
 ) -> transcoder_v1.types.resources.Job:
 
     """
-    Creates a job for transcoding video and audio content with embedded captions.
-    It generates a JobConfig, ElementaryStreams, and MuxStreams object, and then
-    creates the job using the Transcoder Service Client. The resulting Job object
-    contains information about the job, such as its name and the output URI.
+    Creates a new job in the Transcoder Service and configures it to transcode an
+    input video and associated captions.
 
     Args:
-        project_id (str): ID of the Google Cloud project to which the transcoding
-            operation will be applied.
-        location (str): location where the job will be created and processed.
-        input_video_uri (str): URI of the input video to be transcoded.
-        input_captions_uri (str): uri of the captions input video for transcoding.
-        output_uri (str): location where the transcoded video will be stored or
-            made available, and it is used to set the `output_uri` property of the
-            generated Job object.
+        project_id (str): project ID that the job will be created for.
+        location (str): location of the project where the job will be created and
+            processed.
+        input_video_uri (str): 360p resolution video to be transcoded, which will
+            be used as the source material for the job.
+        input_captions_uri (str): URI of the caption file to be embedded into the
+            output video.
+        output_uri (str): URI where the transcoded video and captions will be
+            stored after the job is completed.
 
     Returns:
-        transcoder_v1.types.resources.Job: a `Job` object representing the transcoding
-        job created with embedded captions.
+        transcoder_v1.types.resources.Job: a Job object with the newly created
+        transcoding job.
 
     """
     client = TranscoderServiceClient()
@@ -157,21 +152,21 @@ def create_job_with_set_number_images_spritesheet(
 ) -> transcoder_v1.types.resources.Job:
 
     """
-    Creates a Transcoder job that generates two sprite sheets from an input video
-    and stores them in a Google Cloud Storage bucket.
+    Creates a new Transcoder job and generates two sprite sheets from the input
+    video, storing them in a Google Cloud Storage (GCS) bucket.
 
     Args:
-        project_id (str): 14-digit ID of the Google Cloud project that will contain
-            the generated resources.
-        location (str): location where the job will be created and processed, and
-            it is required to specify the Google Cloud project ID associated with
-            that location.
-        input_uri (str): URL of the input video to be transcoded.
-        output_uri (str): container URL where the transcoded video will be saved.
+        project_id (str): 20-character ID of the Google Cloud project that contains
+            the resources to be transcoded.
+        location (str): location where the transcoding will take place and is used
+            to create the job configuration.
+        input_uri (str): URL of the video or image file to be processed by the
+            Transcoder service.
+        output_uri (str): location where the generated sprite sheets will be saved
 
     Returns:
-        transcoder_v1.types.resources.Job: a job resource representing the newly
-        created Transcoder job.
+        transcoder_v1.types.resources.Job: a Job resource with an ad-hoc configuration
+        for generating sprite sheets from input video.
 
     """
     client = TranscoderServiceClient()
@@ -244,21 +239,22 @@ def get_live_session(
 ) -> stitcher_v1.types.LiveSession:
 
     """
-    Retrieves a live session from Video Stitcher based on a given project ID,
-    location, and session ID.
+    Retrieves a live session from VideoStitcher service by providing the project
+    ID, location, and session ID as input parameters. It returns the LiveSession
+    object representing the session.
 
     Args:
-        project_id (str): identifier of the project in which the live session is
-            located.
-        location (str): location of the live session to be retrieved, and is used
-            in the `live_session_path()` method to construct the full path of the
-            live session resource to retrieve.
-        session_id (str): ID of a live session in the Stitcher platform, which is
-            used to retrieve the specific live session object from the API.
+        project_id (str): ID of the project that contains the live session being
+            retrieved.
+        location (str): location of the live session to be retrieved, which is
+            required information for accessing the relevant live session in the
+            Stitcher video platform.
+        session_id (str): ID of a specific live session to be retrieved within the
+            specified project and location.
 
     Returns:
-        stitcher_v1.types.LiveSession: a `LiveSession` object containing details
-        of a live video streaming session.
+        stitcher_v1.types.LiveSession: a `LiveSession` object containing information
+        about a live session within a given project and location.
 
     """
     client = VideoStitcherServiceClient()
@@ -271,18 +267,18 @@ def get_live_session(
 def list_assets(project_id: str, location: str) -> pagers.ListAssetsPager:
 
     """
-    Uses a Livestream service client to retrieve a list of assets in a specified
-    location for a given project ID, and returns the list of assets.
+    Within a LivestreamServiceClient, retrieves a list of assets in a specific
+    location for a given project ID by calling the `list_assets` method on the
+    client and printing each asset's name.
 
     Args:
-        project_id (str): identifier of the project for which assets are to be listed.
-        location (str): location of the assets to be listed in the parent resource,
-            which is used as the query parameter for the list_assets method of the
-            LivestreamServiceClient.
+        project_id (str): identifier of the project for which assets will be listed.
+        location (str): location of the assets to be listed in the API call made
+            by the `list_assets()` function.
 
     Returns:
-        pagers.ListAssetsPager: a list of assets belonging to a specific project
-        and location.
+        pagers.ListAssetsPager: a list of assets associated with the specified
+        project and location.
 
     """
     client = LivestreamServiceClient()
@@ -301,15 +297,17 @@ def list_assets(project_id: str, location: str) -> pagers.ListAssetsPager:
 def list_channels(project_id: str, location: str) -> pagers.ListChannelsPager:
 
     """
-    List all channels under a given project and location, printing each channel's
-    name and appending it to an empty list called `responses`.
+    Retrieves a list of Livestream channels for a given project and location by
+    calling the `LivestreamServiceClient#listChannels` method, printing the channel
+    names, and returning the list of channels.
 
     Args:
-        project_id (str): ID of the project for which channels are to be listed.
-        location (str): location of the Livestream project to list its channels.
+        project_id (str): ID of the Livestream project for which to list channels.
+        location (str): location from which to list the channels.
 
     Returns:
-        pagers.ListChannelsPager: a list of `Channel` objects.
+        pagers.ListChannelsPager: a list of Livestream channels located at the
+        specified project and location.
 
     """
     client = LivestreamServiceClient()
@@ -329,17 +327,17 @@ def list_channels(project_id: str, location: str) -> pagers.ListChannelsPager:
 def list_inputs(project_id: str, location: str) -> pagers.ListInputsPager:
 
     """
-    For a LivestreamServiceClient, given a project ID and location, lists all
-    inputs under that location using the `client.list_inputs()` method, and returns
-    a list of input names.
+    Lists all inputs associated with a project and a location by making API calls
+    to the Livestream Service Client.
 
     Args:
-        project_id (str): ID of the Livestream project for which the inputs should
-            be listed.
-        location (str): location where you want to get the Livestream service inputs.
+        project_id (str): ID of the project for which to retrieve inputs.
+        location (str): location for which inputs will be listed within a Livestream
+            project identified by the `project_id`.
 
     Returns:
-        pagers.ListInputsPager: a list of ` LivestreamInput ` objects.
+        pagers.ListInputsPager: a list of inputs for a Livestream project in a
+        specific location.
 
     """
     client = LivestreamServiceClient()
@@ -361,15 +359,15 @@ def pic_to_text(infile: str) -> str:
 
     # Instantiates a client
     """
-    Processes an image file and returns the detected text in the image.
+    Reads an image file, processes it through Google's Text Detector API, and
+    returns the detected text.
 
     Args:
-        infile (str): path to an image file that is to be processed by the function,
-            and its contents are read into the function as the input for the
-            `vision.ImageAnnotatorClient()` client instance.
+        infile (str): image file to be processed by the `vision.ImageAnnotatorClient()`
+            client, which reads its content and performs text detection on it.
 
     Returns:
-        str: a string containing the detected text in the input image.
+        str: the detected text within the input image.
 
     """
     client = vision.ImageAnnotatorClient()
@@ -398,23 +396,22 @@ def create_glossary(
 
     # Instantiates a client
     """
-    Creates a new glossary resource in the specified location using the Translate
-    API client and inputs from given languages.
+    Creates a new glossary resource in a Google Cloud Platform project. It takes
+    the project ID, glossary name, and a URI for the input data as inputs and uses
+    the Translate API to create the glossary resource.
 
     Args:
-        languages (list): list of languages for which the glossary will be created,
-            and it is used to set the `language_codes_set` property of the glossary
-            resource being created.
-        project_id (str): 12-digit Google Cloud Project ID that is used to generate
-            the glossary resource name and locate the data center location for the
-            glossary creation operation.
-        glossary_name (str): name of the glossary resource that will be created
-            or updated in the Translate API.
-        glossary_uri (str): location of the glossary data file that will be used
-            to create the new glossary resource.
+        languages (list): list of language codes that the generated glossary will
+            support.
+        project_id (str): ID of the Google Cloud project in which the glossary
+            will be created.
+        glossary_name (str): name of the glossary that will be created, and it is
+            used to assign a unique identifier to the new glossary resource.
+        glossary_uri (str): URI of the glossary to be created, which is used as
+            the input for the `GcsSource` object in the function.
 
     Returns:
-        str: the name of the newly created glossary resource.
+        str: the name of the newly created glossary.
 
     """
     client = translate.TranslationServiceClient()
@@ -458,15 +455,14 @@ def create_glossary(
 
 def initialize_tracer(project_id: str) -> TracerProvider:
     """
-    Sets up an OpenTelemetry tracer provider for a given project ID by adding a
-    span processor to the current trace, setting the global text map to a Cloud
-    Trace Format Propagator, and creating an instance of the tracer with the given
-    name.
+    Sets up an OpenTelemetry tracer provider, adds a span processor to trace Cloud
+    Trace events, and sets global text mapping for OpenTelemetry tracing. It returns
+    the OpenTelemetry tracer instance created.
 
     Args:
-        project_id (str): identifier of a OpenTelemetry project, which is used to
-            set the tracer provider and global text map for the project in the
-            Opentelemetry framework.
+        project_id (str): ID of a project and is used to create a CloudTraceSpanExporter
+            instance, which adds the project-specific trace exporter to the tracer
+            provider, for transmitting span data to OpenTelemetry collectors.
 
     Returns:
         TracerProvider: an OpenTelemetry tracer provider.

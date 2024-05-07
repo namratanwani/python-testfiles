@@ -2,19 +2,21 @@ def list_tasks(
     project_id: str, region: str, job_name: str, group_name: str
 ) -> Iterable[batch_v1.Task]:
     """
-    Lists all tasks associated with a given job and group in a specified region,
-    returning an iterable sequence of `batch_v1.Task` objects.
+    Provides an iterable of tasks based on a given project ID, region, job name,
+    and task group name using the `BatchServiceClient`.
 
     Args:
-        project_id (str): ID of the project for which tasks will be listed.
-        region (str): location where the jobs and tasks are being executed, and
-            it is used to filter the list of tasks returned by the `list_tasks` method.
-        job_name (str): name of the job for which tasks are to be listed.
-        group_name (str): name of the task group to list tasks for in the Batch
-            Service API request.
+        project_id (str): 1-based identifier of the Google Cloud Platform project
+            for which tasks are to be listed.
+        region (str): location of the job for which tasks need to be listed.
+        job_name (str): name of the job for which tasks should be listed, and is
+            used to filter the list of tasks returned by the `list_tasks()` method
+            of the `BatchServiceClient`.
+        group_name (str): name of the task group that the user wants to retrieve
+            tasks for.
 
     Returns:
-        Iterable[batch_v1.Task]: an iterable of `batch_v1.Task` objects.
+        Iterable[batch_v1.Task]: an iterable of batch v1 tasks.
 
     """
     client = batch_v1.BatchServiceClient()
@@ -27,15 +29,14 @@ def print_job_logs(project_id: str, job: batch_v1.Job) -> NoReturn:
      # Initialize client that will be used to send requests across threads. This
     # client only needs to be created once, and can be reused for multiple requests.
     """
-    Iterates over the log entries of a job and prints the payload of each entry
-    that matches the specified filter.
+    Is used to retrieve job logs for a given project and log entry filter criteria.
+    It initializes a logging client, creates a logger, lists entries with the
+    filter criteria, and prints each log entry's payload.
 
     Args:
-        project_id (str): identity of the project associated with the job logs to
-            be retrieved, which is used to initialize a logging client for sending
-            requests across threads.
-        job (batch_v1.Job): batch v1 job object that contains the log entries to
-            be printed.
+        project_id (str): unique identifier of the project for which the job logs
+            are being retrieved.
+        job (batch_v1.Job): Batch job whose logs are to be retrieved and printed.
 
     """
     log_client = logging.Client(project=project_id)
@@ -47,13 +48,19 @@ def print_job_logs(project_id: str, job: batch_v1.Job) -> NoReturn:
 def sample_cancel_operation(project, operation_id):
 
     """
-    Cancels an Operation ID associated with a specific Google Cloud project using
-    the AutoML API.
+    Cancels an operation with a specified project and operation ID using the `AutoMlClient`.
 
     Args:
-        project (str): Google Cloud Project ID used to identify the project in
-            which the operation will be cancelled.
-        operation_id (str): ID of an ongoing operation to be cancelled.
+        project ("Google Cloud Project ID".): Google Cloud Project ID for which
+            an operation will be cancelled.
+            
+            		- `project`: This is a string that represents the ID of a Google
+            Cloud Project. It is a required field and has a maximum length of 32
+            characters.
+            		- `operation_id`: This is a string that represents the ID of an
+            operation within the project. It is a required field and has a maximum
+            length of 255 characters.
+        operation_id (str): ID of the operation to be cancelled.
 
     """
     client = automl_v1beta1.AutoMlClient()
@@ -75,16 +82,15 @@ def authenticate_with_api_key(quota_project_id: str, api_key_string: str) -> Non
 
     # Initialize the Language Service client and set the API key and the quota project id.
     """
-    Uses the given API key and quota project ID to authenticate with a Language
-    Service API, makes a request to analyze the sentiment of a given text, and
-    prints the sentiment score and magnitude.
+    Uses an API key and a quota project ID to initialize a Language Service client
+    and make requests to analyze the sentiment of text.
 
     Args:
-        quota_project_id (str): ID of a Google Cloud Platform project that has
-            access to the Language Service API and is used by the function to
-            authenticate with the API using an API key.
-        api_key_string (str): 12-digit API key used to authenticate with the
-            Language Service API.
+        quota_project_id (str): ID of the project to which the API key is linked,
+            which is required to authenticate the Language Service client.
+        api_key_string (str): API key required to access the Language Service API,
+            which is used to initialize the `LanguageServiceClient` and make
+            requests to analyze sentiment of text.
 
     """
     client = language_v1.LanguageServiceClient(
@@ -108,18 +114,18 @@ def authenticate_with_api_key(quota_project_id: str, api_key_string: str) -> Non
 def create_api_key(project_id: str, suffix: str) -> Key:
        # Create the API Keys client.
     """
-    Creates an API key for a given project and suffix. It sets the display name
-    and location for the API key, creates a request object, makes the request to
-    create the API key, and prints a success message with the created API key value.
+    Creates a new API key for a given project and location, returns the created key.
 
     Args:
-        project_id (str): ID of the Google Cloud Project for which an API key will
-            be created.
-        suffix (str): display name for the newly created API key, which is printed
-            to the console along with the key value.
+        project_id (str): identifier of the Google Cloud Platform project where
+            the API key will be created, which is required as a parent resource
+            for the API key's location in the CreateKeyRequest message.
+        suffix (str): 30-character suffix to be appended to the generated API key,
+            which allows multiple keys to be created for the same project with
+            unique names based on their suffixes.
 
     Returns:
-        Key: a successfully created API key with a displayed name and key string.
+        Key: a `Key` object containing the created API key information.
 
     """
     client = api_keys_v2.ApiKeysClient()
@@ -144,12 +150,12 @@ def lookup_api_key(api_key_string: str) -> None:
    
     # Create the API Keys client.
     """
-    Uses the `ApiKeysClient` to make a lookup request for an API key based on its
-    string value, and prints the retrieved API key name.
+    Creates an instance of the `ApiKeysClient`, initializes a `LookupKeyRequest`
+    object with the API key string, and makes a request to the Google Cloud API
+    to retrieve the name of the API key. The response is then printed to the console.
 
     Args:
-        api_key_string (str): API key to be looked up in the API Keys client, which
-            is used to retrieve the corresponding API key name.
+        api_key_string (str): 12-digit alphanumeric API key to be looked up.
 
     """
     client = api_keys_v2.ApiKeysClient()
@@ -171,18 +177,18 @@ def restrict_api_key_android(project_id: str, key_id: str) -> Key:
 
     # Create the API Keys client.
     """
-    Updates an API key's restrictions for android applications by specifying the
-    allowed application packages and SHA1 fingerprints.
+    Updates an API key's restrictions for Android applications, restricting its
+    use to a single application with a specified package name and SHA1 fingerprint.
 
     Args:
-        project_id (str): 20-digit numerical identifier of the Google Cloud Project
-            to which the API key belongs.
-        key_id (str): 26-character API key ID that is being updated with restriction(s)
-            on Android applications.
+        project_id (str): 12-digit project number used to identify the Google Cloud
+            Platform project that the API key will be restricted for.
+        key_id (str): 256-bit long API key identifier that needs to be updated
+            with restrictions for an android application.
 
     Returns:
-        Key: a successful update of the API key with restrictions applied to the
-        Android application.
+        Key: a success message indicating that the API key has been updated with
+        restrictions on Android application usage.
 
     """
     client = api_keys_v2.ApiKeysClient()
@@ -223,17 +229,18 @@ def restrict_api_key_api(project_id: str, key_id: str) -> Key:
     
     # Create the API Keys client.
     """
-    Restricts an API key by specifying the target service and methods that can be
-    used with the key, preventing unauthorized usage.
+    Restricts an API key's usage by specifying a target service and methods, making
+    it usable only for those methods in that service.
 
     Args:
-        project_id (str): ID of the Google Cloud project to which the API key belongs.
-        key_id (str): 16-character ID of the API key to be restricted, which is
-            used to identify the key in the Google Cloud Platform and enable
+        project_id (str): 25-character ID of the Google Cloud Project that contains
+            the API key being restricted, which is required to specify the correct
+            project for the API key's restriction.
+        key_id (str): ID of an existing API key that is being updated with
             restrictions on its usage.
 
     Returns:
-        Key: a successfully updated API key with restricted usage.
+        Key: a successful update of the API key with restricted usage.
 
     """
     client = api_keys_v2.ApiKeysClient()
@@ -270,17 +277,16 @@ def restrict_api_key_http(project_id: str, key_id: str) -> Key:
     
     # Create the API Keys client.
     """
-    Updates an API key's restrictions by adding a list of allowed referrers for
-    browser key usage, allowing access to specific websites.
+    Updates an API key's restrictions, limiting its usage to specific websites by
+    adding them to the list of allowed referrers.
 
     Args:
-        project_id (str): ID of the Google Cloud project for which an API key will
-            be restricted.
+        project_id (str): ID of the Google Cloud Platform project that the API key
+            belongs to and is required to update the key's restrictions.
         key_id (str): ID of the API key to be restricted.
 
     Returns:
-        Key: a success message indicating that the API key has been updated with
-        restricted usage to specific websites.
+        Key: the updated API key with restrictions on usage for specific websites.
 
     """
     client = api_keys_v2.ApiKeysClient()
@@ -316,17 +322,16 @@ def restrict_api_key_ios(project_id: str, key_id: str) -> Key:
 
     # Create the API Keys client.
     """
-    Updates an API key for iOS usage, restricting its use to specific bundle IDs.
-    It sets the restriction in the `IosKeyRestrictions` object and updates the key
-    with the restriction in the `Restrictions` object.
+    Restricts an API key's usage for iOS apps by specifying allowed bundle IDs.
 
     Args:
-        project_id (str): 10-digit numerical identifier of the Google Cloud Platform
-            project that the API key belongs to.
-        key_id (str): 10-digit ID of the API key that needs to be restricted.
+        project_id (str): ID of the Google Cloud Platform project for which the
+            API key is being restricted, and it is used to identify the project
+            in the request to update the API key restrictions.
+        key_id (str): ID of the API key for which restrictions are being updated.
 
     Returns:
-        Key: a successfully updated API key with restricted usage for iOS apps.
+        Key: a successful update of an API key with restricted usage for iOS apps.
 
     """
     client = api_keys_v2.ApiKeysClient()
