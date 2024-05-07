@@ -1,6 +1,21 @@
 def restrict_api_key_server(project_id: str, key_id: str) -> Key:
   
     # Create the API Keys client.
+    """
+    Updates an API key's restrictions by specifying a list of allowed IP addresses.
+
+    Args:
+        project_id (str): ID of the Google Cloud Project that the API key belongs
+            to and is required to specify the project context for the restriction
+            update operation.
+        key_id (str): 26-character key ID of an API key to be restricted, which
+            is used to update the restrictions on that specific key.
+
+    Returns:
+        Key: the updated API key information with restricted usage based on specified
+        IP addresses.
+
+    """
     client = api_keys_v2.ApiKeysClient()
 
     # Restrict the API key usage by specifying the IP addresses.
@@ -32,6 +47,21 @@ def restrict_api_key_server(project_id: str, key_id: str) -> Key:
 
 
 def is_ipv6(addr):
+    """
+    Determines if an IP address is in IP version 6 (IPv6) format by using the
+    `socket.inet_pton()` method to convert the address to an IPv6 representation
+    and then checking if it succeeds without raising an error. If it does, the
+    function returns `True`, otherwise it returns `False`.
+
+    Args:
+        addr (str): 32-bit IP address to be checked for IPv6 compatibility using
+            the `socket.inet_pton()` method.
+
+    Returns:
+        bool: a boolean value indicating whether the provided address is an IPv6
+        address.
+
+    """
     try:
         socket.inet_pton(socket.AF_INET6, addr)
         return True
@@ -40,6 +70,15 @@ def is_ipv6(addr):
 
 
 def index():
+    """
+    Logs the remote user's IP address to a temporary file, then reads and returns
+    that log message as output.
+
+    Returns:
+        str: a string consisting of two parts: the instance ID and a list of IP
+        addresses seen by the function.
+
+    """
     instance_id = os.environ.get("GAE_INSTANCE", "1")
 
     user_ip = request.remote_addr
@@ -60,6 +99,30 @@ def index():
     return output, 200, {"Content-Type": "text/plain; charset=utf-8"}
 
 def server_error(e):
+    """
+    Generates a server-side error message with an HTML formatted stack trace when
+    an internal error occurs during a request.
+
+    Args:
+        e (Exception.): internal error that occurred during a request, which is
+            passed to the function as an exception.
+            
+            		- `e`: The deserialized input object containing the details of the
+            error that occurred during a request. Its attributes and properties
+            can vary depending on the specific implementation and usage.
+            
+            	The function then returns a response with the message "An internal
+            error occurred" followed by the full stacktrace in a HTML format, along
+            with a status code of 500.
+
+    Returns:
+        : 500: a string of text indicating that an internal error occurred, along
+        with the HTTP status code 500.
+        
+        		- `500`: The HTTP status code indicating that an internal server error
+        occurred.
+
+    """
     logging.exception("An error occurred during a request.")
     return (
         f"An internal error occurred: <pre>{e}</pre><br>See logs for full stacktrace.",
@@ -68,6 +131,21 @@ def server_error(e):
 
 
 def submit_uri(project_id: str, uri: str) -> Submission:
+    """
+    Takes a project ID and a URI to submit to WebRisk for analysis, then creates
+    a submission object with relevant contextual information and submits it to the
+    WebRisk API for threat analysis.
+
+    Args:
+        project_id (str): project ID associated with the URI to be submitted for
+            analysis.
+        uri (str): string that is to be checked for abuse by WebRisk Service.
+
+    Returns:
+        Submission: a `SubmitUriResponse` object containing information about the
+        submitted URI.
+
+    """
     webrisk_client = webrisk_v1.WebRiskServiceClient()
 
     # Set the URI to be submitted.
@@ -126,6 +204,27 @@ def create_cluster(
     node_count: int = 4,
 ) -> operation.Operation:
         
+    """
+    Creates a new cluster within a private cloud project. It requires project ID,
+    zone, and the name for the cluster. The function also specifies the number of
+    nodes required in the cluster
+
+    Args:
+        project_id (str): identifier of a Google Cloud Platform project to which
+            the cluster will be created.
+        zone (str): location where the cluster will be created in the user's Private
+            Cloud.
+        private_cloud_name (str): name of the private cloud where the cluster will
+            be created.
+        cluster_name (str): name of the cluster that will be created, which is
+            required to identify the new cluster in the API response.
+        node_count (4): number of nodes in the cluster being created, which must
+            be greater than or equal to 3 according to the function's logic.
+
+    Returns:
+        operation.Operation: an `operation.Operation` object.
+
+    """
     if node_count < 3:
         raise ValueError("Cluster needs to have at least 3 nodes")
 
@@ -156,6 +255,27 @@ def create_custom_cluster(
     core_count: int = 28,
 ) -> operation.Operation:
     
+    """
+    Creates a custom cluster on a specified private cloud within a project,
+    specifying the cluster name, number of nodes, and core count.
+
+    Args:
+        project_id (str): ID of the project in which the custom cluster will be created.
+        zone (str): location where the private cloud is hosted, which is used to
+            generate the correct URL for the create cluster request.
+        private_cloud_name (str): name of the private cloud where the cluster will
+            be created within.
+        cluster_name (str): name of the custom cluster being created.
+        node_count (4): number of nodes in the custom cluster to be created, which
+            must be greater than or equal to 3.
+        core_count (28): number of custom cores to be allocated to each node in
+            the cluster.
+
+    Returns:
+        operation.Operation: an operation object representing the creation of a
+        custom cluster in VMware.
+
+    """
     if node_count < 3:
         raise ValueError("Cluster needs to have at least 3 nodes")
 
@@ -182,6 +302,21 @@ def create_legacy_network(
     project_id: str, region: str
 ) -> vmwareengine_v1.VmwareEngineNetwork:
     
+    """
+    Creates a legacy network in the specified region and project ID using the
+    VMware Engine API.
+
+    Args:
+        project_id (str): ID of the Google Cloud Platform project to which the
+            legacy network will be created.
+        region (str): location where the legacy network will be created within the
+            project specified by the `project_id`.
+
+    Returns:
+        vmwareengine_v1.VmwareEngineNetwork: a `VmwareEngineNetwork` object
+        representing a legacy network.
+
+    """
     network = vmwareengine_v1.VmwareEngineNetwork()
     network.description = (
         "Legacy network created using vmwareengine_v1.VmwareEngineNetwork"
@@ -207,6 +342,29 @@ def create_network_policy(
     external_ip: bool,
 ) -> operation.Operation:
     
+    """
+    Creates a network policy in the specified region and project ID. It sets the
+    IP range, internet access, and external IP settings for the policy, and then
+    creates the policy using the `vmwareengine` API.
+
+    Args:
+        project_id (str): identifier of the Google Cloud Platform project that the
+            network policy will be created for and is used to identify the location
+            of the network policy in the client's API calls.
+        region (str): region where the network policy will be created, and it is
+            used to determine the ID of the default virtual network within that region.
+        ip_range (str): CIDR block of the network for which the policy is being
+            created, and it must end with the `/26` suffix to be valid.
+        internet_access (bool): enabled status of internet access for the network
+            policy.
+        external_ip (bool): boolean value whether to enable the external IP address
+            of the network policy.
+
+    Returns:
+        operation.Operation: a `operation.Operation` object containing the newly
+        created network policy.
+
+    """
     if not ip_range.endswith("/26"):
         raise ValueError(
             "The ip_range needs to be an RFC 1918 CIDR block with a '/26' suffix"
@@ -231,6 +389,28 @@ def create_private_cloud(
     project_id: str, zone: str, network_name: str, cloud_name: str, cluster_name: str
 ) -> operation.Operation:
  
+    """
+    Creates a private cloud instance in a given project, zone, and network, with
+    a specified management cluster name and node type configuration.
+
+    Args:
+        project_id (str): ID of the Google Cloud Platform project where the private
+            cloud will be created.
+        zone (str): zone where the private cloud will be created in the project
+            identified by the `project_id`.
+        network_name (str): name of the network to which the private cloud will
+            be connected.
+        cloud_name (str): name of the private cloud to be created, which is used
+            to identify the created resource in the VMware Engine API.
+        cluster_name (str): ID of a cluster to be created within the private cloud,
+            which is required for proper configuration and management of nodes in
+            the cloud.
+
+    Returns:
+        operation.Operation: an operation object containing the newly created
+        private cloud.
+
+    """
     request = vmwareengine_v1.CreatePrivateCloudRequest()
     request.parent = f"projects/{project_id}/locations/{zone}"
     request.private_cloud_id = cloud_name

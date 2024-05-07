@@ -3,6 +3,20 @@ from typing import List, Tuple
 
 
 def default_matrix_multiplication(a: List, b: List) -> List:
+    """
+    Computes the multiplication of two 2x2 matrices by creating a new matrix with
+    the dot product of corresponding elements.
+
+    Args:
+        a (List): 2-dimensional matrix to be multiplied with another 2-dimensional
+            matrix.
+        b (List): 2x2 matrix that is multiplied with the 2-dimensional list `a`.
+
+    Returns:
+        List: a list of two lists, where each sublist represents the result of
+        multiplying two 2x2 matrices.
+
+    """
     if len(a) != 2 or len(a[0]) != 2 or len(b) != 2 or len(b[0]) != 2:
         raise Exception("Matrices are not 2x2")
     new_matrix = [
@@ -13,6 +27,21 @@ def default_matrix_multiplication(a: List, b: List) -> List:
 
 
 def matrix_addition(matrix_a: List, matrix_b: List):
+    """
+    Takes two lists of lists, matrix A and B, and returns a new list of lists by
+    adding corresponding elements of each matrix and storing the result in a new
+    list.
+
+    Args:
+        matrix_a (List): 2D array to be added with another 2D array, `matrix_b`,
+            element-wise.
+        matrix_b (List): 2nd matrix to be added to the first matrix in the function.
+
+    Returns:
+        list: a list of lists, where each inner list represents the sum of the
+        corresponding elements of two input matrices.
+
+    """
     return [
         [matrix_a[row][col] + matrix_b[row][col] for col in range(len(matrix_a[row]))]
         for row in range(len(matrix_a))
@@ -20,6 +49,21 @@ def matrix_addition(matrix_a: List, matrix_b: List):
 
 
 def matrix_subtraction(matrix_a: List, matrix_b: List):
+    """
+    Takes two list arguments, `matrix_a` and `matrix_b`, and returns a new list
+    containing the difference between corresponding elements of the two input matrices.
+
+    Args:
+        matrix_a (List): 2D array that is subtracted from another 2D array represented
+            by `matrix_b`.
+        matrix_b (List): 2nd matrix that is being subtracted from the 1st matrix,
+            `matrix_a`.
+
+    Returns:
+        list: a list of lists, where each sub-list represents the difference between
+        the corresponding elements of two input matrices.
+
+    """
     return [
         [matrix_a[row][col] - matrix_b[row][col] for col in range(len(matrix_a[row]))]
         for row in range(len(matrix_a))
@@ -29,6 +73,19 @@ def matrix_subtraction(matrix_a: List, matrix_b: List):
 def split_matrix(
     a: List,
 ) -> Tuple[List, List, List, List]:
+    """
+    Splits a given matrix into four smaller matrices along the diagonal and
+    horizontal lines, such that each smaller matrix has the same size as the
+    original matrix.
+
+    Args:
+        a (List): 2D matrix to be split into four sub-matrices.
+
+    Returns:
+        Tuple[List, List, List, List]: a tuple of four lists, each representing a
+        quarter of the input matrix.
+
+    """
     if len(a) % 2 != 0 or len(a[0]) % 2 != 0:
         raise Exception("Odd matrices are not supported!")
 
@@ -51,11 +108,32 @@ def matrix_dimensions(matrix: List) -> Tuple[int, int]:
 
 
 def print_matrix(matrix: List) -> None:
+    """
+    Prints each element of a given list or matrix using a for loop.
+
+    Args:
+        matrix (List): 2D array that will be printed line by line using the `print()`
+            function in the `print_matrix()` function.
+
+    """
     for i in range(len(matrix)):
         print(matrix[i])
 
 
 def actual_strassen(matrix_a: List, matrix_b: List) -> List:
+    """
+    Takes two lists representing a 2D matrix and multiplies them using Strassen's
+    algorithm, yielding a new 2D matrix as output.
+
+    Args:
+        matrix_a (List): 2D array to be multiplied with the second argument `matrix_b`.
+        matrix_b (List): 2nd matrix to be multiplied with the first matrix `matrix_a`.
+
+    Returns:
+        List: a list of numbers representing the result of multiplying two matrices
+        using the Strassen algorithm.
+
+    """
     if matrix_dimensions(matrix_a) == (2, 2):
         return default_matrix_multiplication(matrix_a, matrix_b)
 
@@ -85,6 +163,21 @@ def actual_strassen(matrix_a: List, matrix_b: List) -> List:
 
 
 def strassen(matrix1: List, matrix2: List) -> List:
+    """
+    Calculates the result of multiplying two matrices by adding zeros to their
+    dimensions so that the arrays have the same dimensions and power of 2, and
+    then performing the actual multiplication using a modified Strassen algorithm.
+
+    Args:
+        matrix1 (List): 2D matrix to be multiplied with another 2D matrix, provided
+            as the `matrix2` input parameter.
+        matrix2 (List): 2D array to be multiplied with the first argument `matrix1`.
+
+    Returns:
+        List: a list of matrices, where each matrix represents the result of
+        multiplying the input matrices using the Strassen algorithm.
+
+    """
     if matrix_dimensions(matrix1)[1] != matrix_dimensions(matrix2)[0]:
         raise Exception(
             f"Unable to multiply these matrices, please check the dimensions. \n"

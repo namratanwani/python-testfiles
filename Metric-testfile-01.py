@@ -1,7 +1,7 @@
 def _is_billing_enabled(project_name: str) -> bool:
     """
-    Takes a project name as input and returns whether billing is enabled for that
-    project.
+    Retrieves billing information for a specified Google Cloud Platform project
+    and returns whether billing is enabled for that project.
 
     Args:
         project_name (str): name of the Google Cloud Platform project for which
@@ -21,8 +21,8 @@ def _is_billing_enabled(project_name: str) -> bool:
 def _disable_billing_for_project(project_name: str) -> None:
   
     """
-    Disables billing for a project by updating its billing information using the
-    Cloud Billing API.
+    Disables billing for a specified project by updating its billing information
+    using the Cloud Billing API.
 
     Args:
         project_name (str): name of the project whose billing will be disabled.
@@ -41,12 +41,11 @@ def _disable_billing_for_project(project_name: str) -> None:
 def create_container_job(project_id: str, region: str, job_name: str) -> batch_v1.Job:
    
     """
-    Creates a job for running a containerized task, defining the job's resources
-    and allocation policy, and creating the job in the specified region.
+    Creates a job for running a containerized task, defines resources and allocation
+    policy, and creates the job in a specified region.
 
     Args:
-        project_id (str): Project ID of the Google Cloud Platform project that
-            will contain the job.
+        project_id (str): Google Cloud Platform project that will contain the job.
         region (str): location where the job will be created and executed, and is
             used to specify the parent of the job in the CreateJobRequest.
         job_name (str): name of the job to be created, which is used as the value
@@ -117,13 +116,12 @@ def create_script_job_with_bucket(
     project_id: str, region: str, job_name: str, bucket_name: str) -> batch_v1.Job:
      
     """
-    Creates a new job in Google Cloud Platform's Batch Engine, using a script as
-    the job's primary task. The script is executed on a virtual machine with a
-    specific configuration of CPU and memory resources, and logs are sent to Cloud
-    Logging.
+    Creates a new job in Google Cloud Platform's Batch Engine using a script as
+    the job's primary task, executing on a virtual machine with specific CPU and
+    memory resources, and logs sent to Cloud Logging.
 
     Args:
-        project_id (str): Project ID where the job will run.
+        project_id (str): project ID where the job will run.
         region (str): Google Cloud Platform region where the job will be created
             and executed, which is used to determine the job's parent resource in
             the create_job method call.
@@ -133,7 +131,7 @@ def create_script_job_with_bucket(
 
     Returns:
         batch_v1.Job: a batch job with a script that runs a command and saves the
-        output to a Google Bucket.
+        output to a Google bucket.
 
     """
     
@@ -198,19 +196,19 @@ def create_script_job_with_bucket(
 def create_script_job(project_id: str, region: str, job_name: str) -> batch_v1.Job:
         
     """
-    Creates a new job in Google Cloud Batch using the `batch v1` API. It defines
-    the task, resource requirements, and allocation policy, and logs policy, then
-    creates the job with specified name and parent region.
+    Creates a new job in Google Cloud Batch using the `batch v1` API, defining the
+    task, resource requirements, and allocation policy, and logs policy, then
+    creating the job with specified name and parent region.
 
     Args:
-        project_id (str): Project ID of the Google Cloud Platform project that the
-            job will be created in.
+        project_id (str): Google Cloud Platform project that the job will be created
+            in.
         region (str): Google Cloud Platform region where the job will run.
         job_name (str): 10-20 character name of the job to be created, which serves
             as an identifier for the job in the Cloud Platform.
 
     Returns:
-        batch_v1.Job: a batch v1 Job resource.
+        batch_v1.Job: a `batch v1.Job` resource.
 
     """
     client = batch_v1.BatchServiceClient()
@@ -280,8 +278,8 @@ def create_script_job_with_template(
     Args:
         project_id (str): identifier of the Google Cloud Platform project in which
             the job will be created and executed.
-        region (str): parent of the job in the Batch Service API, which specifies
-            the region where the job will be created and run.
+        region (str): parent location of the job in the Batch Service API, which
+            specifies the region where the job will be created and run.
         job_name (str): name of the job to be created, which is used as the value
             of the `parent` input parameter and is also the job's ID.
         template_link (str): link to an instance template that defines all the
@@ -346,17 +344,22 @@ def create_script_job_with_template(
 def delete_job(project_id: str, region: str, job_name: str) -> Operation:
    
     """
-    Deletes a job from Google Cloud Billing based on its name, which is specified
-    in the input parameters as a full URL.
+    Deletes a job from Google Cloud Billing based on its name, specified in input
+    parameters as a full URL. It returns an operation object containing information
+    about the deleted job.
 
     Args:
-        project_id (str): ID of the Google Cloud project for which the job is located.
+        project_id (str): ID of the Google Cloud project where the job to be deleted
+            is located and is used as a part of the API call to specify the job
+            to be deleted.
         region (str): location where the job to be deleted is running and is used
             in the delete job API call to specify the job to be deleted.
-        job_name (str): name of the job to be deleted.
+        job_name (str): name of the job to be deleted, and it is used in the delete
+            job API call to specify the job to be deleted.
 
     Returns:
-        Operation: an operation object containing information about the deleted job.
+        Operation: an `Operation` object containing information about the deleted
+        job.
 
     """
     client = batch_v1.BatchServiceClient()
@@ -367,16 +370,18 @@ def delete_job(project_id: str, region: str, job_name: str) -> Operation:
 
 def get_job(project_id: str, region: str, job_name: str) -> batch_v1.Job:
     """
-    Retrieves a batch job using the given project ID, region, and job name from
-    the Google Cloud Batch Service Client.
+    Retrieves a batch job from the Google Cloud Batch Service Client using the
+    given project ID, region, and job name. It returns a `batch_v1.Job` object
+    representing the specified job.
 
     Args:
         project_id (str): identifier of a Google Cloud Project in which the Job
             to be retrieved is located.
-        region (str): location of the job to be retrieved, and is used as the value
-            for the `name` field in the `get_job` method to identify the specific
-            job to retrieve.
-        job_name (str): name of the job to be retrieved from the Batch API.
+        region (str): location of the job to be retrieved from the Batch API, and
+            is used as the value for the `name` field in the `get_job` method to
+            identify the specific job to retrieve.
+        job_name (str): identifier of the specific job to be retrieved from the
+            Batch API.
 
     Returns:
         batch_v1.Job: a `batch_v1.Job` object representing the specified job.
@@ -395,11 +400,14 @@ def get_task(
     ID, region, job name, group name, and task number.
 
     Args:
-        project_id (str): ID of a Google Cloud project.
-        region (str): location where the job associated with the task is being executed.
+        project_id (str): ID of a Google Cloud project required to identify and
+            retrieve a specific task from a batch queue.
+        region (str): location where the job associated with the task is being
+            executed, which is required for Batch ServiceClient to locate the
+            desired task.
         job_name (str): name of the job for which the task is to be retrieved.
-        group_name (str): name of the task group to retrieve the specific task
-            from, which is needed for Batch ServiceClient to locate the desired task.
+        group_name (str): name of the task group that contains the specific task
+            to be retrieved.
         task_number (int): 10-digit ID number of the specific task within the job's
             task group that the function will retrieve.
 
@@ -417,8 +425,8 @@ def get_task(
 
 def list_jobs(project_id: str, region: str) -> Iterable[batch_v1.Job]:
     """
-    Retrieves a list of jobs from Google CloudBatch service using the specified
-    project ID and region.
+    Retrieves a list of jobs from Google Cloud Batch service using a specified
+    project ID and region, returning an iterable of `batch_v1.Job` objects.
 
     Args:
         project_id (str): ID of the project for which job information is requested.

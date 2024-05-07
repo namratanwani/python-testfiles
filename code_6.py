@@ -34,6 +34,21 @@ args = parser.parse_args()
 
 
 def main_worker(rank, config):
+    """
+    Sets up a PyTorch distributed training environment using the NCCL backend, and
+    configures the device and save directory for the training process. It then
+    creates a Trainer object and starts the training process using the given configuration.
+
+    Args:
+        rank (int): 0-based global rank of the process, which is used to allocate
+            device memory and create a distributed training environment using NCCL
+            when `distributed` is set to `True`.
+        config (dict): configuration parameters for the model and trainer, which
+            are used to set the device, initialize the distributed training
+            environment, and create the folder for saving the trained model and
+            evaluation metrics.
+
+    """
     if 'local_rank' not in config:
         config['local_rank'] = config['global_rank'] = rank
     if config['distributed']:
